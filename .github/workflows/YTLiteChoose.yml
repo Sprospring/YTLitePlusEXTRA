@@ -240,7 +240,6 @@ jobs:
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
       - name: Clone YouPiP
-        if: ${{ inputs.all_tweaks }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
     
       - name: Clone YTUHD (with submodules)
@@ -331,7 +330,6 @@ jobs:
             mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
 
       - name: Build YouPiP
-        if: ${{ inputs.all_tweaks }}
         continue-on-error: true
         run: |
           cd YouPiP
