@@ -534,7 +534,7 @@ jobs:
           echo "Injecting the following components:"
           printf '  - %s\n' "${tweaks[@]}"
 
-          cyan -i youtube.ipa -o YTLitePlusEXTRA_${{ env.YT_VERSION }}_v5.2.1_cracked.ipa \
+          cyan -i youtube.ipa -o YTLitePlusEXTRA_${{ env.YT_VERSION }}_C_cracked.ipa \
             -uwef "${tweaks[@]}" \
             -n "${{ inputs.display_name }}" \
             -b "${{ inputs.bundle_id }}"
@@ -543,8 +543,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ytliteplusextra_ytlitecracked-ipa${{ github.run_number }}
-          name: YTLitePlusEXTRA_${{ env.YT_VERSION }}_Cusotom_cracked
-          files: YTLitePlusEXTRA_${{ env.YT_VERSION }}_Custom_cracked.ipa
+          name: YTLitePlusEXTRA_${{ env.YT_VERSION }}_C_cracked
+          files: YTLitePlusEXTRA_${{ env.YT_VERSION }}_C_cracked.ipa
           draft: true
 
       - name: Job Summary - Build Complete
