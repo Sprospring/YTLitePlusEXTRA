@@ -33,11 +33,6 @@ on:
         required: false
         type: boolean
 
-      youpip:
-        description: "Select YouPiP (includes YTVideoOverlay dependency)"
-        default: false
-        type: boolean
-
       ytuhd:
         description: "Select YTUHD"
         default: false
@@ -245,7 +240,7 @@ jobs:
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
       - name: Clone YouPiP
-        if: ${{ inputs.all_tweaks || inputs.youpip }}
+        if: ${{ inputs.all_tweaks }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
     
       - name: Clone YTUHD (with submodules)
@@ -261,7 +256,7 @@ jobs:
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouGroupSettings.git
            
       - name: Clone YTVideoOverlay
-        if: ${{ inputs.all_tweaks || inputs.ytvideooverlay || inputs.youpip }}
+        if: ${{ inputs.all_tweaks || inputs.ytvideooverlay }}
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
           
       - name: Clone YTABConfig
@@ -336,7 +331,7 @@ jobs:
             mv packages/*.deb ${{ github.workspace }}/ytplaybackfix.deb
 
       - name: Build YouPiP
-        if: ${{ inputs.all_tweaks || inputs.youpip }}
+        if: ${{ inputs.all_tweaks }}
         continue-on-error: true
         run: |
           cd YouPiP
@@ -373,7 +368,7 @@ jobs:
           mv packages/*.deb ${{ github.workspace }}/ygs.deb
 
       - name: Build YTVideoOverlay
-        if: ${{ inputs.all_tweaks || inputs.ytvideooverlay || inputs.youpip }}
+        if: ${{ inputs.all_tweaks || inputs.ytvideooverlay }}
         continue-on-error: true
         run: |
           cd YTVideoOverlay
@@ -548,8 +543,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ytliteplusextra_ytlitecracked-ipa${{ github.run_number }}
-          name: YTLitePlusEXTRA_${{ env.YT_VERSION }}_v5.2.1_cracked
-          files: YTLitePlusEXTRA_${{ env.YT_VERSION }}_v5.2.1_cracked.ipa
+          name: YTLitePlusEXTRA_${{ env.YT_VERSION }}_Cusotom_cracked
+          files: YTLitePlusEXTRA_${{ env.YT_VERSION }}_Custom_cracked.ipa
           draft: true
 
       - name: Job Summary - Build Complete
