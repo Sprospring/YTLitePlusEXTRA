@@ -437,14 +437,21 @@ jobs:
           cd Alderis
           make clean
 
-          # lcpshim only searches its local staged Frameworks directory.
-          # Populate it after `make clean`, which removes the .theos tree.
-          frameworks="$PWD/.theos/obj/install/Library/Frameworks"
-          mkdir -p "$frameworks"
-          cp -R "$THEOS/sdks/iPhoneOS18.6.sdk/System/Library/Frameworks/Preferences.framework" "$frameworks/"
-          test -f "$frameworks/Preferences.framework/Preferences.tbd"
+          # Prepare both Rootful and Rootless Frameworks directories for lcpshim
+          frameworks_root="$PWD/.theos/obj/install/Library/Frameworks"
+          frameworks_jb="$PWD/.theos/obj/install/var/jb/Library/Frameworks"
+          
+          mkdir -p "$frameworks_root" "$frameworks_jb"
 
-          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64
+          # Copy Preferences.framework into both paths
+          cp -R "$THEOS/sdks/iPhoneOS18.6.sdk/System/Library/Frameworks/Preferences.framework" "$frameworks_root/"
+          cp -R "$THEOS/sdks/iPhoneOS18.6.sdk/System/Library/Frameworks/Preferences.framework" "$frameworks_jb/"
+
+          # Normalize target platform in .tbd files to 'ios'
+          sed -i '' 's/ios-simulator/ios/g' "$frameworks_root/Preferences.framework/Preferences.tbd"
+          sed -i '' 's/ios-simulator/ios/g' "$frameworks_jb/Preferences.framework/Preferences.tbd"
+
+          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/alderis.deb
 
       - name: Build YouChooseQuality
