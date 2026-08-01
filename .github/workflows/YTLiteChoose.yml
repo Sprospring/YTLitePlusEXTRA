@@ -438,14 +438,17 @@ jobs:
           cd Alderis
           make clean
 
-          # lcpshim only searches its local staged Frameworks directory.
-          # Populate it after `make clean`, which removes the .theos tree.
+          # Prepare local Frameworks directory for lcpshim
           frameworks="$PWD/.theos/obj/install/Library/Frameworks"
           mkdir -p "$frameworks"
+          
+          # Copy Preferences.framework
           cp -R "$THEOS/sdks/iPhoneOS18.6.sdk/System/Library/Frameworks/Preferences.framework" "$frameworks/"
-          test -f "$frameworks/Preferences.framework/Preferences.tbd"
+          
+          # Fix the target platform inside Preferences.tbd so clang doesn't complain about ios-simulator
+          sed -i '' 's/ios-simulator/ios/g' "$frameworks/Preferences.framework/Preferences.tbd"
 
-          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64
+          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/alderis.deb
 
       - name: Build YouChooseQuality
