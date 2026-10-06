@@ -151,9 +151,6 @@ jobs:
         with:
           exclude_inputs: bundle_id,display_name,ytlite_version,demc,ytvid
           
-      - name: Select Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
-
       - name: Download and Validate IPA
         run: |
           wget "${{ inputs.ipa_url }}" --quiet --no-verbose -O youtube.ipa
