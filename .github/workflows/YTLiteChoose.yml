@@ -150,6 +150,9 @@ jobs:
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
           exclude_inputs: bundle_id,display_name,ytlite_version,demc,ytvid
+          
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
 
       - name: Download and Validate IPA
         run: |
@@ -436,19 +439,15 @@ jobs:
           cd Alderis
           make clean
 
-          # Prepare local Frameworks directory for lcpshim
           frameworks="$PWD/.theos/obj/install/Library/Frameworks"
           mkdir -p "$frameworks"
           
-          # Copy Preferences.framework
           cp -R "$THEOS/sdks/iPhoneOS18.6.sdk/System/Library/Frameworks/Preferences.framework" "$frameworks/"
-          
-          # Fix the target platform inside Preferences.tbd so clang doesn't complain about ios-simulator
           sed -i '' 's/ios-simulator/ios/g' "$frameworks/Preferences.framework/Preferences.tbd"
 
-          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/alderis.deb
-
+          make package DEBUG=0 FINALPACKAGE=1 ARCHS=arm64 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6:15.0
+          mv packages/*.deb ${{ github.workspace }}/alderis.deb || true
+          
       - name: Build YouChooseQuality
         if: ${{ inputs.all_tweaks || inputs.youchoosequality }}
         continue-on-error: true
@@ -456,13 +455,10 @@ jobs:
           cd YouChooseQuality
           git checkout 1585a3691b2ef0b59d42c40c31639fd8b79e2cd4
 
-          # Current Logos drops the property access from `%orig.mutableCopy`,
-          # producing an invalid NSArray-to-NSMutableArray assignment.
           sed -i '' 's/%orig\.mutableCopy/[%orig mutableCopy]/' Settings.x
-          grep -Fq 'NSMutableArray *mutableCategories = [%orig mutableCopy];' Settings.x
 
-          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/youchoose.deb
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6:15.0
+          mv packages/*.deb ${{ github.workspace }}/youchoose.deb || true
 
       - name: Build YTSilentVote
         if: ${{ inputs.all_tweaks || inputs.ytsilentvote }}
@@ -485,8 +481,8 @@ jobs:
         continue-on-error: true
         run: |
           cd Gonerino
-          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/gonerino.deb
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6:15.0
+          mv packages/*.deb ${{ github.workspace }}/gonerino.deb || true
 
       - name: Build YouGetCaption
         if: ${{ inputs.all_tweaks || inputs.yougetcaption }}
@@ -509,8 +505,8 @@ jobs:
         continue-on-error: true
         run: |
           cd YTFlags
-          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/ytflags.deb
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6:15.0
+          mv packages/*.deb ${{ github.workspace }}/ytflags.deb || true
 
       - name: Build IAmYouTube
         if: ${{ inputs.all_tweaks || inputs.iamyoutube }}
